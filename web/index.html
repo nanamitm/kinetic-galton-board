@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="球の運動から速度分布を観察する、Kinetic Galton Board のブラウザシミュレーター。">
+<title>Kinetic Galton Board — Web</title>
+<link rel="icon" href="./app.ico"><link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<header><div class="brand"><img src="./app.png" alt="" width="48" height="48"><div><span class="eyebrow">INTERACTIVE PHYSICS LAB</span><h1>Kinetic Galton Board</h1></div></div><a href="https://github.com/nanamitm/kinetic-galton-board">GitHub ↗</a></header>
+<main>
+<div class="intro"><div><h2>球の動きが、分布になる。</h2><p>回転する羽根が球をかき混ぜ、飛び出す速さが落下する位置を決めます。</p></div><span id="status" role="status">読み込み中…</span></div>
+<div class="workspace">
+<section class="simulation panel" aria-label="シミュレーション">
+<div class="panel-head"><h3>実験ボード</h3><div class="view-controls"><button id="view" disabled>斜めから見る</button><span>mm · 実寸モデル</span></div></div>
+<canvas id="board" aria-label="球と回転羽根のリアルタイム表示"></canvas>
+<div class="stats"><div><span>経過時間</span><strong id="time">0.00 <small>s</small></strong></div><div><span>チャンバー内</span><strong id="chamber">—</strong></div><div><span>飛び出した球</span><strong id="escaped">0</strong></div><div><span>実効速度</span><strong id="rms">0.00 <small>m/s</small></strong></div></div>
+</section>
+<aside class="panel controls"><div class="panel-head"><h3>実験の操作</h3><span class="eyebrow">CONTROLS</span></div>
+<fieldset id="controls" disabled>
+<button id="drop" class="primary">球を投入する</button>
+<div class="button-row"><button id="pause" aria-pressed="false">一時停止</button><button id="reset">リセット</button></div>
+<label class="toggle"><span>モーター</span><input id="motor" type="checkbox" checked></label>
+<label for="rpm">回転数 <output id="rpm-value">2600 rpm</output></label><input id="rpm" type="range" min="200" max="6000" step="100" value="2600">
+<label for="count">球の数 <output id="count-value">400</output></label><input id="count" type="range" min="50" max="800" step="50" value="400"><p id="count-note" class="hint">球数を変更すると実験がリセットされます。</p>
+<label for="restitution">球の反発係数 <output id="restitution-value">0.80</output></label><input id="restitution" type="range" min="30" max="98" value="80">
+<label for="speed">再生速度 <output id="speed-value">1×</output></label><input id="speed" type="range" min="1" max="4" value="4"><p class="hint">実際の進行速度は端末の性能によって変わります。</p>
+<label class="toggle"><span>理想分布の曲線</span><input id="theory" type="checkbox" checked></label>
+</fieldset>
+<div class="tip"><b>まずは「球を投入する」</b><p>回転数を変えて、球がどの区画に集まるかを比べてみましょう。</p></div>
+</aside>
+<section class="panel distribution"><div class="panel-head"><h3>速度の分布</h3><div class="legend"><span>● 測定値</span><span>— 理想分布</span></div></div><canvas id="chart" aria-label="区画ごとの球数と理想的な速度分布"></canvas><p id="distribution-note" class="hint">8個以上の球が区画に入ると、理想分布を重ねて表示します。</p></section>
+</div>
+<section class="explanation"><div><span class="eyebrow">HOW IT WORKS</span><h3>位置が、速さを測る。</h3></div><p>出口から仕切りの先端までの落下距離は28 mm。落下時間は約75.6 msです。横方向に速く飛び出した球ほど遠くの区画に入り、速度の分布を形にします。黄色の線は測定値から幅を合わせた理想的な流出分布です。衝突や摩擦があるため、実際の分布とは一致しません。</p></section>
+<noscript>このシミュレーターを使うにはJavaScriptを有効にしてください。</noscript>
+</main>
+<footer><span>Qt版と共通の3D物理計算 · HTML5 / WebAssembly</span><span>モデル: <a href="https://makerworld.com/en/models/2926630-maxwell-boltzmann-kinetic-galton-board">gao.lab</a> · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> · <a href="./NOTICE.md">ライセンス詳細</a></span></footer>
+<script type="module" src="./app.js"></script>
+</body></html>

@@ -8,6 +8,46 @@ It simulates the same **400 balls of 4 mm**, depth axis included.
 None of those dimensions are typed in by hand: they are sliced out of
 `MaxwellBoltzmann775.3mf` with Blender. The app itself never reads the 3MF.
 
+## Browser version (HTML5 / WebAssembly)
+
+**[Run the simulator in your browser](https://nanamitm.github.io/kinetic-galton-board/)**
+
+The browser app compiles the desktop's `src/Simulation.cpp` directly to
+WebAssembly with Emscripten. It keeps the same 3D sphere collisions, extracted
+wall/rotor geometry and 2,000 Hz physics steps. The responsive Japanese HTML5
+interface uses Canvas for front and oblique projections, with live statistics
+and a fitted speed-distribution chart. It is not the Qt/OpenGL interface; mouse
+orbit controls and desktop-only diagnostics are not included.
+
+Pull the slider to release the balls, change RPM or restitution, pause/resume,
+or reset. Changing the ball count resets the experiment. Slower devices may
+run below real time; the displayed elapsed time is simulated time. The page
+pauses simulation while its tab is hidden. WebAssembly and JavaScript must be
+enabled in a modern browser. All assets are served from this repository's Pages
+site, with no CDN or backend dependency.
+
+### Build and test locally
+
+Activate [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html)
+4.0.7 (the version pinned in CI), then run from the repository root:
+
+```sh
+python tools/build_web.py
+node web/physics.test.mjs
+python -m http.server 8080 --directory build-web
+```
+
+Open `http://localhost:8080` (opening the HTML file directly is not supported).
+Qt is not required for this build: `web/compat/` supplies only the value and
+container operations needed by the shared physics source. Its random generator
+has a fixed seed for repeatable web tests; the desktop still uses Qt's generator.
+Generated output is in ignored `build-web/`. GitHub Actions builds and tests
+on pull requests and automatically deploys successful `main` builds to Pages.
+Repository **Settings → Pages → Source** must be **GitHub Actions**.
+The geometry and resulting browser distribution retain the CC BY-NC-SA 4.0
+terms described in [NOTICE.md](NOTICE.md).
+
+
 ![demo](docs/demo.gif)
 
 | At startup (front) | Running (angled) |

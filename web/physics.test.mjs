@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import createPhysics from '../build-web/physics.js';
+const geometry = JSON.parse(await readFile(new URL('../assets/geometry.json',import.meta.url),'utf8'));
+const physics = await createPhysics();
+physics.initialize(geometry);
+let s = physics.snapshot();
+assert.equal(s.balls.length,1600);
+assert.equal(s.chamber,400);
+assert.equal(s.bins.length,15);
+assert.ok(Math.abs(s.fallTime-Math.sqrt(2*28/9810))<1e-9);
+physics.configure(2600,400,.8,false,true);
+for(let i=0;i<25;i++) physics.advance(.02);
+s=physics.snapshot();assert.equal(s.angle,0);assert.equal(s.escaped,0);
+physics.configure(2600,400,.8,true,false);
+for(let i=0;i<500;i++) physics.advance(.02);
+s=physics.snapshot();
+assert.equal(s.chamber+s.escaped,400);
+assert.ok(s.escaped>0,'Balls must leave the chamber after the slider is pulled');
+assert.ok(s.bins.reduce((a,b)=>a+b,0)<=s.escaped);
+for(let i=0;i<s.balls.length;i+=4){
+  assert.ok(Number.isFinite(s.balls[i]) && Number.isFinite(s.balls[i+1]) && Number.isFinite(s.balls[i+2]));
+  assert.ok(s.balls[i]>=geometry.features.left_wall_x && s.balls[i]<=geometry.features.right_wall_x);
+  assert.ok(s.balls[i+1]>=geometry.features.floor_y && s.balls[i+1]<=geometry.features.ceiling_y);
+  assert.ok(s.balls[i+2]>=geometry.body.interior_z[0] && s.balls[i+2]<=geometry.body.interior_z[1]);
+}
+console.log(`10 s: ${s.escaped} escaped; ${s.bins.reduce((a,b)=>a+b,0)} binned; ${s.chamber+s.escaped} balls conserved`);
+physics.configure(6000,800,.98,true,true);
+s=physics.snapshot();assert.ok(s.balls.length<=3200 && s.balls.length>=1600);const loaded=s.balls.length/4;assert.equal(s.time,0);assert.equal(s.escaped,0);
+physics.advance(.02);physics.reset();s=physics.snapshot();assert.equal(s.time,0);assert.equal(s.chamber,loaded);assert.equal(s.angle,0);
+physics.configure(200,50,.3,false,true);s=physics.snapshot();assert.equal(s.balls.length,200);
+console.log('WebAssembly physics smoke tests passed');

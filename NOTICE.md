@@ -5,7 +5,7 @@ or using it commercially.
 
 ## The code — MIT
 
-Everything under `src/`, `tools/`, `CMakeLists.txt` and `CMakePresets.json` is
+Everything under `src/`, `tools/`, `web/`, `CMakeLists.txt` and `CMakePresets.json` is
 original work under the MIT licence (see `LICENSE`).
 
 ## The machine's shape — CC BY-NC-SA 4.0
@@ -40,3 +40,9 @@ If you want a build with no third-party terms attached, delete
 
 The explanation of how the machine works, quoted and paraphrased in `README.md`,
 comes from gao.lab's model description on the page linked above.
+
+## Browser distribution
+
+The HTML5/WebAssembly version uses the same derived geometry. Its published
+`geometry.json` and machine visualisation retain the CC BY-NC-SA 4.0 terms
+above. The WebAssembly physics code and original web interface are MIT.
