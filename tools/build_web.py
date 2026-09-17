@@ -2,6 +2,7 @@
 Requires Emscripten 4.0.7+ on PATH. No Qt or npm dependencies required.
 """
 from pathlib import Path
+import hashlib
 import shutil
 import subprocess
 
@@ -15,8 +16,17 @@ subprocess.run([compiler, str(root/'src/Simulation.cpp'), str(root/'web/bridge.c
     '-I'+str(root/'web/compat'), '-I'+str(root/'src'), '-std=c++17', '-O3',
     '--bind', '-sMODULARIZE=1', '-sEXPORT_ES6=1', '-sALLOW_MEMORY_GROWTH=1',
     '-sENVIRONMENT=web,node', '-o', str(out/'physics.js')], check=True)
-for name in ['index.html', 'style.css', 'app.js']:
-    shutil.copy2(root/'web'/name, out/name)
+# Content-addressed entry assets prevent an updated HTML page from loading an
+# older cached script (GitHub Pages caches assets for up to ten minutes).
+html = (root/'web/index.html').read_text(encoding='utf-8')
+for name in ['style.css', 'app.js']:
+    data = (root/'web'/name).read_bytes()
+    digest = hashlib.sha256(data).hexdigest()[:16]
+    asset = Path(name)
+    versioned = f'{asset.stem}.{digest}{asset.suffix}'
+    (out/versioned).write_bytes(data)
+    html = html.replace(f'./{name}', f'./{versioned}')
+(out/'index.html').write_text(html, encoding='utf-8', newline='\n')
 for name in ['geometry.json','app.png','app.ico']:
     shutil.copy2(root/'assets'/name, out/name)
 for name in ['LICENSE','NOTICE.md']:
