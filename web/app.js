@@ -10,10 +10,10 @@ function updateLabels() {
   $('count-value').value = $('count').value;
   $('restitution-value').value = (+$('restitution').value / 100).toFixed(2);
   $('speed-value').value = `${+$('speed').value / 4}×`;
-  $('drop').textContent = slider ? '球を投入する' : '仕切りを戻す';
-  $('pause').textContent = paused ? '再開' : '一時停止';
+  $('drop').textContent = slider ? 'Release balls' : 'Reinsert slider';
+  $('pause').textContent = paused ? 'Resume' : 'Pause';
   $('pause').setAttribute('aria-pressed', String(paused));
-  status(paused ? '一時停止中' : slider ? '投入待ち' : '実験中');
+  status(paused ? 'Paused' : slider ? 'Ready to release' : 'Running');
 }
 function readState() {
   state = physics.snapshot();
@@ -24,12 +24,12 @@ function readState() {
   $('rms').innerHTML = `${state.rms.toFixed(2)} <small>m/s</small>`;
   const loaded = state.balls.length/4;
   $('count-note').textContent = loaded < +$('count').value
-    ? `形状の容量に合わせて${loaded}個を配置しています。球数の変更でリセットします。`
-    : '球数を変更すると実験がリセットされます。';
+    ? `Loaded ${loaded} balls to fit the chamber. Changing the count resets the experiment.`
+    : 'Changing the ball count resets the experiment.';
   const total = state.bins.reduce((a,b) => a+b,0);
   $('distribution-note').textContent = state.fitted
-    ? `区画内 ${total} 個 · 理想分布のピーク速度 ${(state.sigma/1000).toFixed(2)} m/s（測定値から推定）`
-    : `区画内 ${total} 個 · 8個以上の球が区画に入ると、理想分布を重ねて表示します。`;
+    ? `${total} balls in bins · Fitted ideal peak speed: ${(state.sigma/1000).toFixed(2)} m/s`
+    : `${total} balls in bins · The ideal curve appears after at least 8 balls have landed.`;
 }
 function surface(canvas) {
   const {width,height} = canvas.getBoundingClientRect();
@@ -85,7 +85,7 @@ function drawChart() {
   for(let i=0;i<=4;i++){const n=max*i/4,y=sy(n);c.strokeStyle='#293647';c.beginPath();c.moveTo(left,y);c.lineTo(right,y);c.stroke();c.fillStyle='#91a2b8';c.fillText(n.toFixed(0),left-8,y+3);}
   c.fillStyle='#5ac7e5';state.bins.forEach((n,i)=>{const b=f.bins[i],x=sx((b.x0-f.divider_x1)/state.fallTime),end=sx((b.x1-f.divider_x1)/state.fallTime);c.fillRect(x+1,sy(n),Math.max(1,end-x-2),bottom-sy(n));});
   if(state.fitted && $('theory').checked){c.save();c.beginPath();c.rect(left,top,right-left,bottom-top);c.clip();c.beginPath();for(let i=0;i<=160;i++){const v=vmin+(vmax-vmin)*i/160;i?c.lineTo(sx(v),sy(density(v))):c.moveTo(sx(v),sy(density(v)));}c.strokeStyle='#ffd166';c.lineWidth=2;c.stroke();c.restore();}
-  c.fillStyle='#91a2b8';c.textAlign='center';for(let i=0;i<=5;i++){const v=vmin+(vmax-vmin)*i/5;c.fillText((v/1000).toFixed(1),sx(v),bottom+16);}c.fillText('流出速度 [m/s]  =  区画の位置 / 落下時間',(left+right)/2,h-5);
+  c.fillStyle='#91a2b8';c.textAlign='center';for(let i=0;i<=5;i++){const v=vmin+(vmax-vmin)*i/5;c.fillText((v/1000).toFixed(1),sx(v),bottom+16);}c.fillText('Escape speed [m/s] = bin position / fall time',(left+right)/2,h-5);
 }
 function draw(){if(state){drawBoard();drawChart();}}
 function frame(now) {
@@ -95,7 +95,7 @@ function frame(now) {
 async function start() {
   try {
     const [{default:createPhysics}, response] = await Promise.all([import('./physics.js'),fetch('./geometry.json')]);
-    if(!response.ok) throw new Error(`形状データの取得に失敗 (${response.status})`);
+    if(!response.ok) throw new Error(`Could not load geometry (${response.status})`);
     geometry=await response.json();physics=await createPhysics();physics.initialize(geometry);
     $('controls').disabled=false;$('view').disabled=false;
     $('drop').addEventListener('click',()=>{slider=!slider;configure();updateLabels();});
@@ -106,13 +106,13 @@ async function start() {
     for(const id of ['rpm','restitution','motor']) $(id).addEventListener('input',()=>{configure();updateLabels();});
     $('speed').addEventListener('input',updateLabels);
     $('theory').addEventListener('change',draw);
-    $('view').addEventListener('click',()=>{angled=!angled;$('view').textContent=angled?'正面から見る':'斜めから見る';draw();});
+    $('view').addEventListener('click',()=>{angled=!angled;$('view').textContent=angled?'Front view':'Oblique view';draw();});
     document.addEventListener('visibilitychange',()=>{last=performance.now();});
     new ResizeObserver(draw).observe(board);
     updateLabels();readState();last=performance.now();requestAnimationFrame(frame);
   } catch(error) {
     console.error(error);$('status').classList.add('error');
-    status(`起動できませんでした。ページを再読み込みしてください。${error.message}`);
+    status(`Could not start the simulator. Please reload the page. ${error.message}`);
   }
 }
 start();

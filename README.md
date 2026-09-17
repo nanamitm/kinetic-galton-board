@@ -14,7 +14,7 @@ None of those dimensions are typed in by hand: they are sliced out of
 
 The browser app compiles the desktop's `src/Simulation.cpp` directly to
 WebAssembly with Emscripten. It keeps the same 3D sphere collisions, extracted
-wall/rotor geometry and 2,000 Hz physics steps. The responsive Japanese HTML5
+wall/rotor geometry and 2,000 Hz physics steps. The responsive English HTML5
 interface uses Canvas for front and oblique projections, with live statistics
 and a fitted speed-distribution chart. It is not the Qt/OpenGL interface; mouse
 orbit controls and desktop-only diagnostics are not included.
