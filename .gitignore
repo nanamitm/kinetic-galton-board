@@ -1,0 +1,15 @@
+# build output
+build/
+build-*/
+out/
+*.user
+CMakeUserPresets.json
+
+# intermediates from tools/build_geometry.ps1 (STLs cut out of the 3MF, previews)
+build_assets/
+
+# The printable model is gao.lab's work, licensed CC BY-NC-SA 4.0, and is not
+# redistributed here.  Download it from MakerWorld and drop it in this folder -
+# see README section "Getting the 3MF".
+MaxwellBoltzmann775.3mf
+*.3mf

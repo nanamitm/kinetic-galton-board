@@ -1,0 +1,15 @@
+# Normalise line endings so the repo is identical on every platform.
+* text=auto eol=lf
+
+# PowerShell is happiest with CRLF on Windows.
+*.ps1 text eol=crlf
+
+# Never touch binaries.
+*.png  binary
+*.gif  binary
+*.3mf  binary
+*.stl  binary
+
+# Keep generated images out of diffs and language stats.
+docs/** linguist-documentation
+assets/geometry.json linguist-generated
