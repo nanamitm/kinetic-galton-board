@@ -1,6 +1,7 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
     <qresource prefix="/assets">
+        <file alias="app.ico">app.ico</file>
         <file alias="geometry.json">geometry.json</file>
     </qresource>
 </RCC>

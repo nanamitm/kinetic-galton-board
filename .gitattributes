@@ -6,6 +6,7 @@
 
 # Never touch binaries.
 *.png  binary
+*.ico  binary
 *.gif  binary
 *.3mf  binary
 *.stl  binary

@@ -5,6 +5,7 @@
 #include <QCommandLineParser>
 #include <QDir>
 #include <QFileInfo>
+#include <QIcon>
 #include <QPalette>
 #include <QSurfaceFormat>
 #include <QTextStream>
@@ -217,6 +218,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     QCoreApplication::setApplicationName(QStringLiteral("KineticGaltonBoard"));
     QCoreApplication::setApplicationVersion(QStringLiteral("1.0"));
+    app.setWindowIcon(QIcon(QStringLiteral(":/assets/app.ico")));
     applyDarkPalette(app);
 
     QCommandLineParser parser;

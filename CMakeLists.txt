@@ -28,6 +28,23 @@ qt_add_executable(KineticGaltonBoard WIN32
     assets/assets.qrc
 )
 
+if(WIN32)
+    if(MINGW)
+        # windres forwards include paths incorrectly when they contain spaces.
+        # This resource needs no preprocessing includes; run beside the icon.
+        set(icon_object "${CMAKE_CURRENT_BINARY_DIR}/app-icon.o")
+        add_custom_command(OUTPUT "${icon_object}"
+            COMMAND "${CMAKE_RC_COMPILER}" -O coff -i app.rc -o "${icon_object}"
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+            DEPENDS assets/app.rc assets/app.ico
+            VERBATIM)
+        target_sources(KineticGaltonBoard PRIVATE "${icon_object}")
+    else()
+        target_sources(KineticGaltonBoard PRIVATE assets/app.rc)
+        target_include_directories(KineticGaltonBoard PRIVATE assets)
+    endif()
+endif()
+
 target_include_directories(KineticGaltonBoard PRIVATE src)
 target_link_libraries(KineticGaltonBoard PRIVATE
     Qt6::Widgets Qt6::OpenGL Qt6::OpenGLWidgets)
